@@ -244,32 +244,40 @@ struct priority_queue {
 int Reseau::meilleurPlusCourtChemin(unsigned int numOrigine, unsigned int numDest, std::vector<unsigned int> & chemin) throw (std::logic_error)
 {
 	if (!sommetExiste(numOrigine) || !sommetExiste(numDest)) throw std::logic_error("MeilleurPlusCourtChemin: Un des sommets n'existe pas!");
-	std::unordered_map<unsigned int, int> distances;
+	std::unordered_map<unsigned int, unsigned int> distances;
 	int max_poids = std::numeric_limits<int>::max();
+	std::priority_queue<PairAtt, std::vector<PairAtt>, std::greater<PairAtt>> priorityQueue;
+	unsigned int latestNode = 0;
 
-	//vector<int> dist(V,INF);
-
-	std::priority_queue<PairAtt> priorityQueue;
+	for (auto kv:m_arcs){
+		distances[kv.first] = max_poids;
+	}
 
 	priorityQueue.push(std::make_pair(0,numOrigine));
 	distances[numOrigine] = 0;
+	chemin.push_back(numOrigine);
 
 	while(!priorityQueue.empty()){
-		int prochNode = priorityQueue.top().second;
+		unsigned int source = priorityQueue.top().second; //u
 		priorityQueue.pop();
 
 		std::unordered_map< unsigned int,std::pair<unsigned int, unsigned int>>::iterator adjVectrices;
-		for (adjVectrices = m_arcs[prochNode].begin(); adjVectrices != m_arcs[prochNode].end(); ++adjVectrices){
-			unsigned int source = (*adjVectrices).first;
-			unsigned int poids = (*adjVectrices).second;
-			if(distances[source] > (distances[prochNode] + poids)){
-				distances[source] = distances[prochNode] + poids;
-				priorityQueue.push(std::make_pair(distances[source],source));
+		for (adjVectrices = m_arcs[source].begin(); adjVectrices != m_arcs[source].end(); ++adjVectrices){
+			unsigned int prochNode = (*adjVectrices).second.first; //v
+			unsigned int poids = (*adjVectrices).second.second;
+			if(distances[prochNode] > (distances[source] + poids)){
+				distances[prochNode] = distances[source] + poids;
+				priorityQueue.push(std::make_pair(distances[prochNode],prochNode));
+				chemin.push_back(prochNode);
+				latestNode = prochNode;
 			}
+		}
+		if (numDest == latestNode){
+			return distances[latestNode];
 		}
 	}
 
-	return 0;
+	return max_poids;
 }
 
 /*!
