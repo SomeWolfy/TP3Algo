@@ -258,12 +258,12 @@ int Reseau::meilleurPlusCourtChemin(unsigned int numOrigine, unsigned int numDes
 	chemin.push_back(numOrigine);
 
 	while(!priorityQueue.empty()){
-		unsigned int source = priorityQueue.top().second; //u
+		unsigned int source = priorityQueue.top().second;
 		priorityQueue.pop();
 
 		std::unordered_map< unsigned int,std::pair<unsigned int, unsigned int>>::iterator adjVectrices;
 		for (adjVectrices = m_arcs[source].begin(); adjVectrices != m_arcs[source].end(); ++adjVectrices){
-			unsigned int prochNode = (*adjVectrices).second.first; //v
+			unsigned int prochNode = (*adjVectrices).second.first; 
 			unsigned int poids = (*adjVectrices).second.second;
 			if(distances[prochNode] > (distances[source] + poids)){
 				distances[prochNode] = distances[source] + poids;
